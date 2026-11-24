@@ -1,0 +1,12 @@
+dependencies:
+- name: aws-emulator
+  repository: file://../aws-emulator
+  version: 0.1.0
+- name: keda
+  repository: https://kedacore.github.io/charts
+  version: 2.21.1
+- name: external-secrets
+  repository: https://charts.external-secrets.io
+  version: 2.15.0
+digest: sha256:61565a030bf39e25be7de112b58035f9e28af766ce189da1a03926f68bb9e158
+generated: "2026-11-24T16:57:56.725447-05:00"

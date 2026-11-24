@@ -1,0 +1,29 @@
+image:
+  repository: aws-emulator
+  tag: "1.0.500"
+  pullPolicy: IfNotPresent    # ADR 0001: local image, never pulled
+
+port: 9297
+
+args:                         # appended to the image ENTRYPOINT
+  - "-p"
+  - "9297"
+  - "--auth"
+  - "off"
+
+resources:
+  requests:
+    memory: 2Gi
+    cpu: 500m
+  limits:
+    memory: 2Gi
+    cpu: 500m
+
+caPublisher:
+  image:
+    repository: ca-publisher
+    tag: "0.1.2"
+    pullPolicy: IfNotPresent
+  resources:
+    requests: {cpu: 50m, memory: 64Mi}
+    limits:   {cpu: 50m, memory: 64Mi}

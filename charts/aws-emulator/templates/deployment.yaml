@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aws-emulator
+  labels:
+    {{- include "aws-emulator.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate          # never two emulators at once; state is in memory
+  selector:
+    matchLabels:
+      {{- include "aws-emulator.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "aws-emulator.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: aws-emulator
+      securityContext:
+        runAsUser: 1000
+        runAsNonRoot: true
+        fsGroup: 1000
+      containers:
+        - name: emulator
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            {{- toYaml .Values.args | nindent 12 }}
+          ports:
+            - name: https
+              containerPort: {{ .Values.port }}
+          readinessProbe:
+            httpGet:
+              path: /__admin/health
+              port: https
+              scheme: HTTPS
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /__admin/health
+              port: https
+              scheme: HTTPS
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: aws-home
+              mountPath: /home/emulator/.aws
+        - name: ca-publisher
+          image: "{{ .Values.caPublisher.image.repository }}:{{ .Values.caPublisher.image.tag }}"
+          imagePullPolicy: {{ .Values.caPublisher.image.pullPolicy }}
+          env:
+            - name: HOME
+              value: /tmp           # kubectl writes a cache directory under $HOME
+          resources:
+            {{- toYaml .Values.caPublisher.resources | nindent 12 }}
+          volumeMounts:
+            - name: aws-home
+              mountPath: /home/emulator/.aws
+              readOnly: true
+      volumes:
+        - name: aws-home
+          emptyDir: {}

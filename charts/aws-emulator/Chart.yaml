@@ -1,0 +1,6 @@
+apiVersion: v2
+name: aws-emulator
+description: AWS Emulator for local development
+type: application
+version: 0.1.0          # chart version
+appVersion: "1.0.500"   # emulator version

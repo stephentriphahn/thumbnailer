@@ -1,0 +1,6 @@
+awsEmulator:
+  enabled: true
+keda:
+  enabled: true
+external-secrets:
+  enabled: true
